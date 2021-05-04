@@ -1,0 +1,55 @@
+{
+  "name": "photinia",
+  "version": "1.0.0-alpha.1",
+  "description": "",
+  "homepage": "https://github.com/Zolyn/Photinia#readme",
+  "bugs": {
+    "url": "https://github.com/Zolyn/Photinia/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zolyn/Photinia.git"
+  },
+  "license": "MIT",
+  "author": "Zorin",
+  "main": "index.js",
+  "bin": {
+    "photinia": "dist/main.js"
+  },
+  "scripts": {
+    "rel:ma": "standard-version -r major -n",
+    "rel:mi": "standard-version -r minor -n",
+    "rel:pa": "standard-version -r patch -n",
+    "prerel:a": "standard-version -p alpha -n",
+    "prerel:b": "standard-version -p beta -n",
+    "prerel:r": "standard-version -p rc -n",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "async": "^3.2.0",
+    "chalk": "^4.1.1",
+    "inquirer": "^8.0.0",
+    "prettier": "^2.2.1",
+    "shelljs": "^0.8.4"
+  },
+  "devDependencies": {
+    "@types/async": "^3.2.6",
+    "@types/shelljs": "^0.8.8",
+    "@commitlint/cli": "^12.1.1",
+    "@commitlint/config-conventional": "^12.1.1",
+    "@types/inquirer": "^7.3.1",
+    "@types/node": "^12.20.11",
+    "@types/prettier": "^2.2.3",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "eslint": "^7.25.0",
+    "eslint-config-alloy": "^4.1.0",
+    "husky": "^6.0.0",
+    "lint-staged": "^10.5.4",
+    "sort-package-json": "^1.49.0",
+    "standard-version": "^9.2.0",
+    "typescript": "^4.2.4"
+  },
+  "keywords": []
+}
+

@@ -1,42 +1,52 @@
 import * as inquirer from 'inquirer';
 import * as async from 'async';
 import * as fs from 'fs';
+import * as shell from 'shelljs';
+import { basename } from 'path';
 
-import { Template } from './utils';
-import { defaultConfig } from './default';
-import { importConfig } from './config';
+import { Configuration, Errno, Logger, Template } from './modules/utils';
+import { defaultConfig } from './config/default';
+import { detectConfig } from './modules/runtimeConfig';
+import { initProject } from './modules/init';
 
 let config = defaultConfig;
 let template: Template;
 let templateFiles: string[];
 
-importConfig((err, result) => {
+detectConfig((err, result) => {
     if (err) {
-        console.log('Could not find configuration. Using default config...');
+        Logger.warn('Could not find configuration. Using default config...');
     } else {
-        config = result as Template[];
-        console.log(config);
+        config = result as Configuration;
+        Logger.debug(config);
     }
-    guide();
+
+    initProject(config, (err_1) => {
+        if (err_1) {
+            Logger.err(err_1);
+        } else {
+            guide();
+        }
+    });
 });
 
 function guide() {
-    const symbolicLinks = new Map(config.map((val) => [val.name, val]));
+    const templateLinks = new Map(config.templates.map((val): [string, Template] => [val.name, val]));
     inquirer
         .prompt([
             {
                 type: 'list',
                 name: 'template',
                 message: 'Which template do you want to choose?',
-                choices: [...symbolicLinks].map((val) => val[0]),
+                choices: [...templateLinks].map((val) => val[0]),
             },
         ])
-        .then((answers) => {
-            template = symbolicLinks.get(answers.template) as Template;
+        .then((answers): void => {
+            template = templateLinks.get(answers.template) as Template;
             templateFiles = [...template.files].map((val) => val[0]);
             filesGuide();
         })
-        .catch((err) => console.error(err));
+        .catch((err: Errno) => Logger.err(err));
 
     function filesGuide() {
         inquirer
@@ -55,10 +65,10 @@ function guide() {
                     choices: templateFiles,
                 },
             ])
-            .then((answers) => {
+            .then((answers): void => {
                 importFiles(answers.choseFiles);
             })
-            .catch((err) => console.error(err));
+            .catch((err: Errno) => Logger.err(err));
     }
 }
 
@@ -67,13 +77,16 @@ function importFiles(choseFiles?: string[]) {
     async.each(
         templateFiles,
         (item, callback) => {
+            const filePath = `${config.repo}${item}`;
             const output = template.files.get(item) as string;
-            fs.copyFile(item, output, (err) => {
-                if (err) {
-                    callback(err);
-                } else {
-                    console.log('Imported: ', item);
-                    callback();
+            fs.stat(filePath, (err, stat): void => {
+                if (stat.isDirectory()) {
+                    if (!shell.cp('-r', filePath, output).code) {
+                        Logger.done(`Imported: ${basename(filePath)}`);
+                        callback(null);
+                    } else {
+                        callback(new Error('Error'));
+                    }
                 }
             });
         },

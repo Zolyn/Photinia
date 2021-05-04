@@ -3,69 +3,89 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const inquirer = require("inquirer");
 const async = require("async");
 const fs = require("fs");
-const default_1 = require("./default");
-const config_1 = require("./config");
+const shell = require("shelljs");
+const path_1 = require("path");
+const utils_1 = require("./modules/utils");
+const default_1 = require("./config/default");
+const runtimeConfig_1 = require("./modules/runtimeConfig");
+const init_1 = require("./modules/init");
 let config = default_1.defaultConfig;
 let template;
 let templateFiles;
-config_1.importConfig((err, result) => {
+runtimeConfig_1.detectConfig((err, result) => {
     if (err) {
-        console.log('Could not find configuration. Using default config...');
+        utils_1.Logger.warn('Could not find configuration. Using default config...');
     }
     else {
         config = result;
-        console.log(config);
+        utils_1.Logger.debug(config);
     }
-    guide();
+    init_1.initProject(config, err_1 => {
+        if (err_1) {
+            utils_1.Logger.err(err_1);
+        }
+        else {
+            guide();
+        }
+    });
 });
 function guide() {
-    const symbolicLinks = new Map(config.map((val) => [val.name, val]));
-    inquirer.prompt([
+    const templateLinks = new Map(config.templates.map((val) => [val.name, val]));
+    inquirer
+        .prompt([
         {
             type: 'list',
             name: 'template',
             message: 'Which template do you want to choose?',
-            choices: [...symbolicLinks].map(val => val[0])
-        }
-    ]).then(answers => {
-        template = symbolicLinks.get(answers.template);
-        templateFiles = [...template.files].map(val => val[0]);
+            choices: [...templateLinks].map((val) => val[0]),
+        },
+    ])
+        .then((answers) => {
+        template = templateLinks.get(answers.template);
+        templateFiles = [...template.files].map((val) => val[0]);
         filesGuide();
-    }).catch(err => console.error(err));
+    })
+        .catch((err) => utils_1.Logger.err(err));
     function filesGuide() {
-        inquirer.prompt([
+        inquirer
+            .prompt([
             {
                 type: 'confirm',
                 name: 'allFiles',
                 message: 'Import all template files?',
-                default: true
+                default: true,
             },
             {
                 type: 'checkbox',
                 name: 'choseFiles',
                 message: 'Please select the file you want to import',
-                when: answers => !answers.allFiles,
-                choices: templateFiles
-            }
-        ]).then(answers => {
+                when: (answers) => !answers.allFiles,
+                choices: templateFiles,
+            },
+        ])
+            .then((answers) => {
             importFiles(answers.choseFiles);
-        }).catch(err => console.error(err));
+        })
+            .catch((err) => utils_1.Logger.err(err));
     }
 }
 function importFiles(choseFiles) {
     templateFiles = choseFiles || templateFiles;
     async.each(templateFiles, (item, callback) => {
+        const filePath = `${config.repo}${item}`;
         const output = template.files.get(item);
-        fs.copyFile(item, output, err => {
-            if (err) {
-                callback(err);
-            }
-            else {
-                console.log('Imported: ', item);
-                callback();
+        fs.stat(filePath, (err, stat) => {
+            if (stat.isDirectory()) {
+                if (!shell.cp('-r', filePath, output).code) {
+                    utils_1.Logger.done(`Imported: ${path_1.basename(filePath)}`);
+                    callback(null);
+                }
+                else {
+                    callback(new Error('Error'));
+                }
             }
         });
-    }, err => {
+    }, (err) => {
         if (err) {
             console.error(err);
         }
