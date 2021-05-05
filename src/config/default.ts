@@ -61,6 +61,10 @@ const defaultConfig: Configuration = {
             scripts: mixinObj(
                 {
                     clean: 'rm -rf ./dist',
+                    lint: 'eslint ./src/**/*.ts ./src/*.ts',
+                    format: 'prettier --write ./src/**/*.ts ./src/*.ts',
+                    depend: 'dpdm ./src/**/*.ts ./src/*.ts --warning false',
+                    build: 'yarn clean && yarn lint && yarn format && yarn depend && tsc',
                 },
                 basicTemplate.scripts,
             ),

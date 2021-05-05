@@ -14,7 +14,7 @@ let template;
 let checkBox = {
     files: [''],
     devDependencies: [''],
-    scripts: ['']
+    scripts: [''],
 };
 runtimeConfig_1.detectConfig((err, result) => {
     if (err) {
@@ -46,26 +46,24 @@ function templateGuide() {
     ])
         .then((answers) => {
         template = templateLinks.get(answers.template);
-        checkBox.files = [...template.files].map(val => val[0]);
-        checkBox.devDependencies = Object.entries(template.devDeps).map(val => `${val[0]}@${val[1]}`);
-        checkBox.scripts = Object.entries(template.scripts).map(val => `${val[0]} - ${val[1]}`);
+        checkBox.files = [...template.files].map((val) => val[0]);
+        checkBox.devDependencies = Object.entries(template.devDeps).map((val) => `${val[0]}@${val[1]}`);
+        checkBox.scripts = Object.entries(template.scripts).map((val) => `${val[0]} - ${val[1]}`);
         mainGuide();
     })
         .catch((err) => utils_1.Logger.err(err));
 }
 function mainGuide() {
-    const questions = [
-        'files',
-        'devDependencies',
-        'scripts'
-    ];
-    inquirer.prompt(questions.map((val) => ({
+    const questions = ['files', 'devDependencies', 'scripts'];
+    inquirer
+        .prompt(questions.map((val) => ({
         type: 'checkbox',
         name: val,
         message: `Please select the ${val} you want to import`,
         choices: checkBox[val],
-        loop: false
-    }))).then((answers) => {
+        loop: false,
+    })))
+        .then((answers) => {
         checkBox = answers;
         utils_1.Logger.debug(answers);
     });
