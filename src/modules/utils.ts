@@ -10,7 +10,15 @@ interface Template {
     name: string;
     files: Map<string, string>;
     devDeps: PackageJSON;
+    scripts: PackageJSON;
     packageManager?: PackageManagers;
+}
+
+interface CheckBox {
+    files: string[];
+    devDependencies: string[];
+    scripts: string[];
+    [index: string]: string[];
 }
 
 interface PackageJSON {
@@ -34,6 +42,7 @@ const Logger = {
     upd: (msg: string): void => console.log(`${chalk.bgYellow(' UPDATE ')} ${msg}`),
     debug: (msg: any): void => console.log(`${chalk.bgGray('DEBUG')}`, msg),
     newLine: (lines: number): void => console.log('\n'.repeat(lines)),
+    cls: () => console.clear(),
     str: {
         err: (msg: ErrTypes): string => `${chalk.bgRed(' ERROR ')} ${msg}`,
         warn: (msg: ErrTypes): string => `${chalk.bgRed(' WARN ')} ${msg}`,
@@ -43,4 +52,4 @@ const Logger = {
     },
 };
 
-export { Configuration, Template, CallbackFn, PackageJSON, Errno, Logger };
+export { Configuration, Template, CallbackFn, PackageJSON, Errno, Logger, CheckBox };

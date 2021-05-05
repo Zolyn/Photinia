@@ -2,16 +2,20 @@ import * as inquirer from 'inquirer';
 import * as async from 'async';
 import * as fs from 'fs';
 import * as shell from 'shelljs';
-import { basename } from 'path';
+import { basename, resolve } from 'path';
 
-import { Configuration, Errno, Logger, Template } from './modules/utils';
+import { CallbackFn, CheckBox, Configuration, Errno, Logger, Template } from './modules/utils';
 import { defaultConfig } from './config/default';
 import { detectConfig } from './modules/runtimeConfig';
 import { initProject } from './modules/init';
 
 let config = defaultConfig;
 let template: Template;
-let templateFiles: string[];
+let checkBox: CheckBox = {
+    files: [''],
+    devDependencies: [''],
+    scripts: [''],
+};
 
 detectConfig((err, result) => {
     if (err) {
@@ -25,12 +29,12 @@ detectConfig((err, result) => {
         if (err_1) {
             Logger.err(err_1);
         } else {
-            guide();
+            templateGuide();
         }
     });
 });
 
-function guide() {
+function templateGuide() {
     const templateLinks = new Map(config.templates.map((val): [string, Template] => [val.name, val]));
     inquirer
         .prompt([
@@ -43,58 +47,60 @@ function guide() {
         ])
         .then((answers): void => {
             template = templateLinks.get(answers.template) as Template;
-            templateFiles = [...template.files].map((val) => val[0]);
-            filesGuide();
+            checkBox.files = [...template.files].map((val) => val[0]);
+            checkBox.devDependencies = Object.entries(template.devDeps).map((val) => `${val[0]}@${val[1]}`);
+            checkBox.scripts = Object.entries(template.scripts).map((val) => `${val[0]} - ${val[1]}`);
+            mainGuide();
         })
         .catch((err: Errno) => Logger.err(err));
-
-    function filesGuide() {
-        inquirer
-            .prompt([
-                {
-                    type: 'confirm',
-                    name: 'allFiles',
-                    message: 'Import all template files?',
-                    default: true,
-                },
-                {
-                    type: 'checkbox',
-                    name: 'choseFiles',
-                    message: 'Please select the file you want to import',
-                    when: (answers) => !answers.allFiles,
-                    choices: templateFiles,
-                },
-            ])
-            .then((answers): void => {
-                importFiles(answers.choseFiles);
-            })
-            .catch((err: Errno) => Logger.err(err));
-    }
 }
 
-function importFiles(choseFiles?: string[]) {
-    templateFiles = choseFiles || templateFiles;
+function mainGuide() {
+    const questions = ['files', 'devDependencies', 'scripts'];
+    inquirer
+        .prompt(
+            questions.map((val) => ({
+                type: 'checkbox',
+                name: val,
+                message: `Please select the ${val} you want to import`,
+                choices: checkBox[val],
+                loop: false,
+            })),
+        )
+        .then((answers: CheckBox) => {
+            checkBox = answers;
+            Logger.debug(answers);
+        });
+}
+
+function importFiles() {
     async.each(
-        templateFiles,
+        checkBox.files,
         (item, callback) => {
-            const filePath = `${config.repo}${item}`;
+            const filePath = resolve(config.repo, item);
             const output = template.files.get(item) as string;
+            let result: shell.ShellString;
             fs.stat(filePath, (err, stat): void => {
-                if (stat.isDirectory()) {
-                    if (!shell.cp('-r', filePath, output).code) {
-                        Logger.done(`Imported: ${basename(filePath)}`);
-                        callback(null);
-                    } else {
-                        callback(new Error('Error'));
-                    }
+                if (err) {
+                    callback(err);
+                } else if (stat.isDirectory()) {
+                    result = shell.cp('-r', filePath, output);
+                } else {
+                    result = shell.cp(filePath, output);
+                }
+                if (!result.code) {
+                    Logger.done(`Imported: ${basename(filePath)}`);
+                    callback();
+                } else {
+                    callback(new Error(result.stderr));
                 }
             });
         },
         (err) => {
             if (err) {
-                console.error(err);
+                Logger.err(err);
             } else {
-                console.log('Complete.');
+                Logger.done('Complete');
             }
         },
     );

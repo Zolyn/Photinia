@@ -18,6 +18,7 @@
         "photinia": "dist/main.js"
     },
     "scripts": {
+        "clean": "rm -rf ./dist",
         "rel:ma": "standard-version -r major -n",
         "rel:mi": "standard-version -r minor -n",
         "rel:pa": "standard-version -r patch -n",
@@ -43,6 +44,7 @@
         "@types/shelljs": "^0.8.8",
         "@typescript-eslint/eslint-plugin": "^4.22.0",
         "@typescript-eslint/parser": "^4.22.0",
+        "dpdm": "^3.6.0",
         "eslint": "^7.25.0",
         "eslint-config-alloy": "^4.1.0",
         "husky": "^6.0.0",

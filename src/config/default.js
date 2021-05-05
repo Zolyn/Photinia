@@ -1,8 +1,9 @@
-import { Configuration } from '../modules/utils';
-import { mixinObj, mixinArr, Arr, BasicTemplate } from '../modules/mixins';
-import * as os from 'os';
-
-const basicTemplate: BasicTemplate = {
+'use strict';
+exports.__esModule = true;
+exports.defaultConfig = void 0;
+var mixins_1 = require('../modules/mixins');
+var os = require('os');
+var basicTemplate = {
     files: [
         ['basic/.commitlintrc.js', '.'],
         ['.husky', '.'],
@@ -31,15 +32,14 @@ const basicTemplate: BasicTemplate = {
         prepare: 'husky install',
     },
 };
-
-const defaultConfig: Configuration = {
-    repo: `${os.homedir()}/PhotiniaRepo`,
+var defaultConfig = {
+    repo: os.homedir() + '/PhotiniaRepo',
     initPackageManager: 'yarn',
     templates: [
         {
             name: 'TypeScript',
             files: new Map(
-                mixinArr(
+                mixins_1.mixinArr(
                     [
                         ['typescript/.lintstagedrc.js', '.'],
                         ['typescript/.husky/pre-commit', '.husky/pre-commit'],
@@ -47,8 +47,7 @@ const defaultConfig: Configuration = {
                     basicTemplate.files,
                 ),
             ),
-
-            devDeps: mixinObj(
+            devDeps: mixins_1.mixinObj(
                 {
                     '@typescript-eslint/eslint-plugin': '^4.22.0',
                     '@typescript-eslint/parser': '^4.22.0',
@@ -57,8 +56,7 @@ const defaultConfig: Configuration = {
                 },
                 basicTemplate.devDeps,
             ),
-
-            scripts: mixinObj(
+            scripts: mixins_1.mixinObj(
                 {
                     clean: 'rm -rf ./dist',
                 },
@@ -67,5 +65,4 @@ const defaultConfig: Configuration = {
         },
     ],
 };
-
-export { defaultConfig };
+exports.defaultConfig = defaultConfig;
