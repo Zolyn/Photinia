@@ -6,7 +6,7 @@ const os = require("os");
 const basicTemplate = {
     files: [
         ['basic/.commitlintrc.js', '.'],
-        ['.husky', '.'],
+        ['basic/.husky', '.'],
         ['basic/.lintstagedrc.js', '.'],
         ['basic/.prettierrc.js', '.'],
         ['basic/.versionrc.js', '.'],
@@ -33,28 +33,21 @@ const basicTemplate = {
     },
 };
 const defaultConfig = {
-    repo: `${os.homedir()}/PhotiniaRepo`,
+    repo: `${os.homedir()}/.photinia/repo`,
     initPackageManager: 'yarn',
     templates: [
         {
             name: 'TypeScript',
-            files: new Map(mixins_1.mixinArr([
+            files: mixins_1.mixinMap([
                 ['typescript/.lintstagedrc.js', '.'],
-                ['typescript/.husky/pre-commit', '.husky/pre-commit'],
-            ], basicTemplate.files)),
-            devDeps: mixins_1.mixinObj({
-                '@typescript-eslint/eslint-plugin': '^4.22.0',
-                '@typescript-eslint/parser': '^4.22.0',
-                dpdm: '^3.6.0',
-                typescript: '^4.2.4',
-            }, basicTemplate.devDeps),
-            scripts: mixins_1.mixinObj({
-                clean: 'rm -rf ./dist',
-                lint: 'eslint ./src/**/*.ts ./src/*.ts',
-                format: 'prettier --write ./src/**/*.ts ./src/*.ts',
-                depend: 'dpdm ./src/**/*.ts ./src/*.ts --warning false',
-                build: 'yarn clean && yarn lint && yarn format && yarn depend && tsc',
-            }, basicTemplate.scripts),
+                ['typescript/.eslintrc.js', '.'],
+                ['typescript/.eslintignore', '.'],
+                ['typescript/.prettierignore', '.'],
+                ['typescript/.gitignore', '.'],
+                ['typescript/.husky/pre-commit', '.husky'],
+            ], basicTemplate.files),
+            devDeps: Object.assign({ '@typescript-eslint/eslint-plugin': '^4.22.0', '@typescript-eslint/parser': '^4.22.0', dpdm: '^3.6.0', typescript: '^4.2.4' }, basicTemplate.devDeps),
+            scripts: Object.assign({ clean: 'rm -rf ./dist', lint: 'eslint ./src/**/*.ts ./src/*.ts', format: 'prettier --write ./src/**/*.ts ./src/*.ts', depend: 'dpdm ./src/**/*.ts ./src/*.ts --warning false', build: 'yarn clean && yarn lint && yarn format && yarn depend && tsc' }, basicTemplate.scripts),
         },
     ],
 };

@@ -1,4 +1,4 @@
-import { PackageJSON } from './utils';
+import { PackageJSON, MappingTable } from './utils';
 
 interface BasicTemplate {
     files: Arr;
@@ -8,11 +8,9 @@ interface BasicTemplate {
 
 type Arr = [string, string][];
 
-function mixinArr(arr: Arr, mixins: Arr): Arr {
+function mixinMap(arr: Arr, mixins: Arr): MappingTable {
     arr.unshift(...mixins);
-    return arr;
+    return new Map(arr);
 }
 
-const mixinObj = (obj: PackageJSON, mixins: PackageJSON): PackageJSON => ({ ...obj, ...mixins });
-
-export { mixinObj, mixinArr, Arr, BasicTemplate };
+export { mixinMap, BasicTemplate };

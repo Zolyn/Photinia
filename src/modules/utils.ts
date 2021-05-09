@@ -8,7 +8,7 @@ interface Configuration {
 
 interface Template {
     name: string;
-    files: Map<string, string>;
+    files: MappingTable;
     devDeps: PackageJSON;
     scripts: PackageJSON;
     packageManager?: PackageManagers;
@@ -31,7 +31,9 @@ type Errno = NodeJS.ErrnoException;
 
 type ErrTypes = Errno | string | null;
 
-type CallbackFn = (err: ErrTypes, result?: Configuration) => void;
+type CallbackFn = (err: ErrTypes, result?: Configuration | PackageJSON) => void;
+
+type MappingTable = Map<string, string>;
 
 // 日志打印 -- 模块
 const Logger = {
@@ -41,8 +43,7 @@ const Logger = {
     done: (msg: string): void => console.log(`${chalk.bgGreen(' DONE ')} ${msg}`),
     upd: (msg: string): void => console.log(`${chalk.bgYellow(' UPDATE ')} ${msg}`),
     debug: (msg: any): void => console.log(`${chalk.bgGray('DEBUG')}`, msg),
-    newLine: (lines: number): void => console.log('\n'.repeat(lines)),
-    cls: () => console.clear(),
+    newLine: (lines: number): void => console.log('\n'.repeat(lines - 1)),
     str: {
         err: (msg: ErrTypes): string => `${chalk.bgRed(' ERROR ')} ${msg}`,
         warn: (msg: ErrTypes): string => `${chalk.bgRed(' WARN ')} ${msg}`,
@@ -52,4 +53,4 @@ const Logger = {
     },
 };
 
-export { Configuration, Template, CallbackFn, PackageJSON, Errno, Logger, CheckBox };
+export { Configuration, Template, CallbackFn, PackageJSON, Errno, Logger, CheckBox, MappingTable };
