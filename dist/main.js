@@ -140,11 +140,9 @@ function configurePackage() {
         scripts[scriptInfo[0].trim()] = scriptInfo[1].trim();
         return undefined;
     });
-    const mergeObjects = {
-        devDependencies,
-        scripts,
-    };
-    const result = shell.echo(prettier.format(JSON.stringify(Object.assign(Object.assign({}, packageFile), mergeObjects)), { parser: 'json-stringify' }));
+    const result = shell.echo(prettier.format(JSON.stringify(Object.assign(Object.assign({}, packageFile), { devDependencies, scripts })), {
+        parser: 'json-stringify',
+    }));
     if (result.code) {
         utils_1.Logger.err(result.stderr);
     }

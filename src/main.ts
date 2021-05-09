@@ -104,6 +104,7 @@ function importFiles() {
             const filePath = resolve(config.repo, item);
             const output = template.files.get(item) as string;
             let result: shell.ShellString;
+
             if (shell.test('-d', filePath)) {
                 result = shell.cp('-r', filePath, output);
             } else if (shell.test('-f', filePath)) {
@@ -149,14 +150,12 @@ function configurePackage() {
         return undefined;
     });
 
-    const mergeObjects = {
-        devDependencies,
-        scripts,
-    };
-
     const result = shell.echo(
-        prettier.format(JSON.stringify({ ...packageFile, ...mergeObjects }), { parser: 'json-stringify' }),
+        prettier.format(JSON.stringify({ ...packageFile, ...{ devDependencies, scripts } }), {
+            parser: 'json-stringify',
+        }),
     );
+
     if (result.code) {
         Logger.err(result.stderr);
     } else {
