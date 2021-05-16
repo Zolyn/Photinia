@@ -2,8 +2,6 @@
     "compilerOptions": {
         "incremental": true,
         "strict": true,
-        "strictNullChecks": true,
-        "strictBindCallApply": true,
         "module": "CommonJS",
         "tsBuildInfoFile": "./dist/buildFile.tsbuildinfo",
         "target": "ES6",
