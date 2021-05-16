@@ -1,20 +1,21 @@
 import { whiteBright as chalk } from 'chalk';
+import * as os from 'os';
+
+const photinia = `${os.homedir()}/.config/photinia`;
 
 interface Configuration {
-    repo: string;
-    initPackageManager: PackageManagers;
+    initPackageManager: 'npm' | 'yarn' | 'pnpm';
     templates: Template[];
 }
 
 interface Template {
+    repo: string;
     name: string;
-    files: MappingTable;
-    devDeps: PackageJSON;
-    scripts: PackageJSON;
-    packageManager?: PackageManagers;
+    fileMap: Map<string, string>;
+    packageManager?: Configuration['initPackageManager'];
 }
 
-interface CheckBox {
+interface ChoiceBox {
     files: string[];
     devDependencies: string[];
     scripts: string[];
@@ -25,32 +26,63 @@ interface PackageJSON {
     [index: string]: string | { [index: string]: string };
 }
 
-type PackageManagers = 'npm' | 'yarn' | 'pnpm';
-
 type Errno = NodeJS.ErrnoException;
 
 type ErrTypes = Errno | string | null;
 
 type CallbackFn = (err: ErrTypes, result?: Configuration | PackageJSON) => void;
 
-type MappingTable = Map<string, string>;
+function awaitHelper<T, U = string>(promise: Promise<T>): Promise<[U | null, T | null]> {
+    return promise
+        .then<[null, T]>((res) => [null, res])
+        .catch<[U, null]>((err) => [err, null]);
+}
 
 // 日志打印 -- 模块
-const Logger = {
-    err: (msg: ErrTypes): void => console.log(`${chalk.bgRed(' ERROR ')} ${msg}`),
-    warn: (msg: ErrTypes): void => console.log(`${chalk.bgRed(' WARN ')} ${msg}`),
-    info: (msg: string): void => console.log(`${chalk.bgBlue(' INFO ')} ${msg}`),
-    done: (msg: string): void => console.log(`${chalk.bgGreen(' DONE ')} ${msg}`),
-    upd: (msg: string): void => console.log(`${chalk.bgYellow(' UPDATE ')} ${msg}`),
-    debug: (msg: any): void => console.log(`${chalk.bgGray('DEBUG')}`, msg),
-    newLine: (lines: number): void => console.log('\n'.repeat(lines - 1)),
-    str: {
-        err: (msg: ErrTypes): string => `${chalk.bgRed(' ERROR ')} ${msg}`,
-        warn: (msg: ErrTypes): string => `${chalk.bgRed(' WARN ')} ${msg}`,
-        info: (msg: string): string => `${chalk.bgBlue(' INFO ')} ${msg}`,
-        done: (msg: string): string => `${chalk.bgGreen(' DONE ')} ${msg}`,
-        upd: (msg: string): string => `${chalk.bgYellow(' UPDATE ')} ${msg}`,
+const Logger: LoggerMethods = {
+    err: (msg) => console.log(`${chalk.bgRed(' ERROR ')} ${msg}`),
+    warn: (msg) => console.log(`${chalk.bgRed(' WARN ')} ${msg}`),
+    info: (msg) => console.log(`${chalk.bgBlue(' INFO ')} ${msg}`),
+    done: (msg) => console.log(`${chalk.bgGreen(' DONE ')} ${msg}`),
+    upd: (msg) => console.log(`${chalk.bgYellow(' UPDATE ')} ${msg}`),
+    debug: (msg) => console.log(`${chalk.bgGray('DEBUG')}`, msg),
+    newLine: (lines) => console.log('\n'.repeat(lines - 1)),
+    throw: (msg) => {
+        throw new Error(msg);
     },
 };
 
-export { Configuration, Template, CallbackFn, PackageJSON, Errno, Logger, CheckBox, MappingTable };
+interface LoggerMethods extends copyAttr<LoggerMethods, 'info', 'done' | 'upd' | 'throw'> {
+    err: (msg: ErrTypes) => void;
+    warn: LoggerMethods['err'];
+    info: (msg: string) => void;
+    debug: (msg: unknown) => void;
+    newLine: (lines: number) => void;
+}
+
+type copyAttr<T, K extends keyof T, N extends string> = {
+    [P in N]: T[K];
+};
+
+function overrideKey<O extends Object, T extends Object>(origin: O, target: T, keys: (keyof O)[]) {
+    keys.map((val) => {
+        // 允许在目标对象创建或修改键
+        // @ts-ignore
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        target[val] = origin[val];
+        return undefined;
+    });
+}
+
+export {
+    photinia,
+    overrideKey,
+    Configuration,
+    Template,
+    CallbackFn,
+    PackageJSON,
+    Errno,
+    Logger,
+    ChoiceBox,
+    awaitHelper,
+};

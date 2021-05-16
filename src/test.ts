@@ -1,17 +1,17 @@
 // Just tests
 import * as inquirer from 'inquirer';
 import * as shell from 'shelljs';
+import { awaitHelper, Logger, overrideKey } from './modules/utils';
 
-const packageFile = {
-    name: 'package',
+const a = {
+    a: '1',
+    b: '2',
 };
 
-const devDependencies = 'devdeps';
-const scripts = 'scrs';
-
-const mergeObjects = {
-    devDependencies,
-    scripts,
+const b = {
+    a: 'a',
+    b: 'b',
 };
 
-console.log(JSON.stringify({ ...packageFile, ...{ devDependencies, scripts } }));
+overrideKey(b, a, ['a', 'b']);
+Logger.debug(a);

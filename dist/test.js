@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const packageFile = {
-    name: 'package',
+const utils_1 = require("./modules/utils");
+const a = {
+    a: '1',
+    b: '2',
 };
-const devDependencies = 'devdeps';
-const scripts = 'scrs';
-const mergeObjects = {
-    devDependencies,
-    scripts,
+const b = {
+    a: 'a',
+    b: 'b',
 };
-console.log(JSON.stringify(Object.assign(Object.assign({}, packageFile), { devDependencies, scripts })));
+utils_1.overrideKey(b, a, ['a', 'b']);
+utils_1.Logger.debug(a);

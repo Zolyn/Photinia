@@ -4,11 +4,11 @@ import * as prettier from 'prettier';
 import * as shell from 'shelljs';
 import { resolve } from 'path';
 
-import {awaitHelper, CheckBox, Configuration, Errno, Logger, PackageJSON, Template} from './modules/utils';
+import { awaitHelper, CheckBox, Configuration, Errno, Logger, PackageJSON, Template } from './modules/utils';
 import { defaultConfig } from './config/default';
 import { detectConfig } from './modules/config';
 import { initProject } from './modules/init_d';
-import {homedir} from "os";
+import { homedir } from 'os';
 
 let config = defaultConfig;
 let packageFile: PackageJSON;
@@ -27,7 +27,6 @@ let checkBox: CheckBox = {
         config = res;
     }
 })();
-
 
 detectConfig((err, result) => {
     if (err) {
