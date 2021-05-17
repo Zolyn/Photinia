@@ -52,7 +52,7 @@ const inquirer = require("inquirer");
         return;
     }
     template = templateMap.get(guideRes.template);
-    const [templateErr] = yield utils_1.awaitHelper(import_1.importTemplate(template));
+    const [templateErr] = yield utils_1.awaitHelper(import_1.importTemplate(template, packageInfo));
     if (templateErr) {
         utils_1.Logger.err(templateErr);
     }

@@ -51,7 +51,7 @@ import * as inquirer from 'inquirer';
 
     template = templateMap.get(guideRes.template) as Template;
 
-    const [templateErr] = await awaitHelper(importTemplate(template));
+    const [templateErr] = await awaitHelper(importTemplate(template, packageInfo));
 
     if (templateErr) {
         Logger.err(templateErr);

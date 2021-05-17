@@ -1,5 +1,5 @@
 import { Configuration } from '../modules/utils';
-import { BasicTemplate, mixinMap } from '../modules/mixins';
+import { BasicTemplate, mixinMap } from './mixins';
 import * as os from 'os';
 
 const basicTemplate: BasicTemplate = {

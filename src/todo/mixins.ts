@@ -1,4 +1,4 @@
-import { PackageJSON, MappingTable } from './utils';
+import { PackageJSON, MappingTable } from '../modules/utils';
 
 interface BasicTemplate {
     files: Arr;

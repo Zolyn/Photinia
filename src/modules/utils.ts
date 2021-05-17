@@ -32,10 +32,21 @@ type ErrTypes = Errno | string | null;
 
 type CallbackFn = (err: ErrTypes, result?: Configuration | PackageJSON) => void;
 
+// await帮助函数，帮助捕获异常
 function awaitHelper<T, U = string>(promise: Promise<T>): Promise<[U | null, T | null]> {
     return promise
         .then<[null, T]>((res) => [null, res])
         .catch<[U, null]>((err) => [err, null]);
+}
+
+// 转换二维数组至对象
+function arrayToObject(arr: string[]): { [index: string]: string } {
+    return Object.fromEntries(
+        arr.map((val) => {
+            const splitedVal = val.split('---');
+            return [splitedVal[0].trim(), splitedVal[1].trim()];
+        }),
+    );
 }
 
 // 日志打印 -- 模块
@@ -85,4 +96,5 @@ export {
     Logger,
     ChoiceBox,
     awaitHelper,
+    arrayToObject,
 };
