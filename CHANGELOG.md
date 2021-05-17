@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0-rc.0](https://github.com/Zolyn/Photinia/compare/v1.0.0-beta.0...v1.0.0-rc.0) (2021-05-17)
+
+
+### Styles
+
+* code style ([269d150](https://github.com/Zolyn/Photinia/commit/269d15042e7248d6b07463bf12315c16b6c24e6d))
+
+
+### Tests
+
+* refactoring test ([541d0a7](https://github.com/Zolyn/Photinia/commit/541d0a7f1c9b510ad54e8d98562d3f536f7783ad))
+
+
+### Refactor
+
+* code style & config ([fdf21ff](https://github.com/Zolyn/Photinia/commit/fdf21ff835c67b2a8770aa5ddb3118bab6f6b992))
+
 ## [1.0.0-beta.0](https://github.com/Zolyn/Photinia/compare/v1.0.0-alpha.1...v1.0.0-beta.0) (2021-05-09)
 
 
