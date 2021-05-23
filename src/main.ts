@@ -3,6 +3,7 @@ import { initProject } from './modules/init';
 import { importTemplate } from './modules/import';
 import * as shell from 'shelljs';
 import * as inquirer from 'inquirer';
+import { mergeExtend } from './modules/extend';
 
 (async () => {
     let config: Configuration;
@@ -44,12 +45,23 @@ import * as inquirer from 'inquirer';
             },
         ]),
     );
+
     if (guideErr) {
         Logger.err(guideErr);
         return;
     }
 
     template = templateMap.get(guideRes.template) as Template;
+
+    // 实验性功能：继承
+    if (template.extends) {
+        const [extendErr, extendRes] = await awaitHelper(mergeExtend(template, templateMap));
+
+        if (extendErr) {
+            Logger.err(extendErr);
+            return;
+        }
+    }
 
     const [templateErr] = await awaitHelper(importTemplate(template, packageInfo));
 

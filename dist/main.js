@@ -14,6 +14,7 @@ const init_1 = require("./modules/init");
 const import_1 = require("./modules/import");
 const shell = require("shelljs");
 const inquirer = require("inquirer");
+const extend_1 = require("./modules/extend");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     let config;
     let packageInfo;
@@ -52,6 +53,14 @@ const inquirer = require("inquirer");
         return;
     }
     template = templateMap.get(guideRes.template);
+    // 实验性功能：继承
+    if (template.extends) {
+        const [extendErr, extendRes] = yield utils_1.awaitHelper(extend_1.mergeExtend(template, templateMap));
+        if (extendErr) {
+            utils_1.Logger.err(extendErr);
+            return;
+        }
+    }
     const [templateErr] = yield utils_1.awaitHelper(import_1.importTemplate(template, packageInfo));
     if (templateErr) {
         utils_1.Logger.err(templateErr);

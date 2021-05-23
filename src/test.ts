@@ -1,7 +1,7 @@
 // Just tests
 import * as inquirer from 'inquirer';
 import * as shell from 'shelljs';
-import { awaitHelper, Logger, overrideKey } from './modules/utils';
+import { awaitHelper, Logger } from './modules/utils';
 
 (async () => {
     function test() {

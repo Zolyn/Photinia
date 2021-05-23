@@ -1,15 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.arrayToObject = exports.awaitHelper = exports.Logger = exports.overrideKey = exports.photinia = void 0;
+exports.mergeMap = exports.arrayToObject = exports.awaitHelper = exports.Logger = exports.photinia = void 0;
 const chalk_1 = require("chalk");
 const os = require("os");
 const photinia = `${os.homedir()}/.config/photinia`;
 exports.photinia = photinia;
 // await帮助函数，帮助捕获异常
 function awaitHelper(promise) {
-    return promise
-        .then((res) => [null, res])
-        .catch((err) => [err, null]);
+    return promise.then((res) => [null, res]).catch((err) => [err, null]);
 }
 exports.awaitHelper = awaitHelper;
 // 转换二维数组至对象
@@ -34,13 +32,9 @@ const Logger = {
     },
 };
 exports.Logger = Logger;
-function overrideKey(origin, target, keys) {
-    keys.map((val) => {
-        // 允许在目标对象创建或修改键
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        target[val] = origin[val];
-        return undefined;
-    });
+function mergeMap(map1, map2) {
+    const arr = [...map1];
+    arr.push(...map2);
+    return new Map(arr);
 }
-exports.overrideKey = overrideKey;
+exports.mergeMap = mergeMap;

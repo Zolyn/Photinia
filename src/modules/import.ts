@@ -2,7 +2,7 @@ import * as asy from 'async';
 import * as inquirer from 'inquirer';
 import * as prettier from 'prettier';
 import { resolve } from 'path';
-import { arrayToObject, awaitHelper, ChoiceBox, Logger, overrideKey, PackageJSON, photinia, Template } from './utils';
+import { arrayToObject, awaitHelper, ChoiceBox, Logger, PackageJSON, photinia, Template } from './utils';
 import * as shell from 'shelljs';
 
 async function importation(template: Template, packageFile: PackageJSON) {
@@ -45,7 +45,7 @@ async function importation(template: Template, packageFile: PackageJSON) {
 
     if (!promptRes.all) {
         const messages = ['files', 'devDependencies', 'scripts'];
-        const [selectErr, selectRes] = await awaitHelper(
+        const [selectErr, selectRes] = await awaitHelper<ChoiceBox>(
             inquirer.prompt(
                 messages.map((val) => ({
                     type: 'checkbox',
@@ -61,7 +61,7 @@ async function importation(template: Template, packageFile: PackageJSON) {
             Logger.throw(selectErr);
         }
 
-        overrideKey(selectRes, choiceBox, ['files', 'devDependencies', 'scripts']);
+        choiceBox = selectRes as ChoiceBox;
     }
 
     // 导入文件

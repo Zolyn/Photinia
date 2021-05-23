@@ -57,7 +57,7 @@ function importation(template, packageFile) {
             if (selectErr) {
                 utils_1.Logger.throw(selectErr);
             }
-            utils_1.overrideKey(selectRes, choiceBox, ['files', 'devDependencies', 'scripts']);
+            choiceBox = selectRes;
         }
         // 导入文件
         asy.each(choiceBox.files, (item, callback) => {

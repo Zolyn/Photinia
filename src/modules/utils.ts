@@ -13,12 +13,12 @@ interface Template {
     name: string;
     fileMap: Map<string, string>;
     packageManager?: Configuration['initPackageManager'];
+    // 实验性功能：继承
+    extends?: string[];
 }
 
-interface ChoiceBox {
+interface ChoiceBox extends copyAttr<ChoiceBox, 'files', 'devDependencies' | 'scripts'> {
     files: string[];
-    devDependencies: string[];
-    scripts: string[];
     [index: string]: string[];
 }
 
@@ -26,17 +26,11 @@ interface PackageJSON {
     [index: string]: string | { [index: string]: string };
 }
 
-type Errno = NodeJS.ErrnoException;
-
-type ErrTypes = Errno | string | null;
-
-type CallbackFn = (err: ErrTypes, result?: Configuration | PackageJSON) => void;
+type ErrTypes = NodeJS.ErrnoException | string | null;
 
 // await帮助函数，帮助捕获异常
 function awaitHelper<T, U = string>(promise: Promise<T>): Promise<[U | null, T | null]> {
-    return promise
-        .then<[null, T]>((res) => [null, res])
-        .catch<[U, null]>((err) => [err, null]);
+    return promise.then<[null, T]>((res) => [null, res]).catch<[U, null]>((err) => [err, null]);
 }
 
 // 转换二维数组至对象
@@ -75,26 +69,10 @@ type copyAttr<T, K extends keyof T, N extends string> = {
     [P in N]: T[K];
 };
 
-function overrideKey<O extends Object, T extends Object>(origin: O, target: T, keys: (keyof O)[]) {
-    keys.map((val) => {
-        // 允许在目标对象创建或修改键
-        // @ts-ignore
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        target[val] = origin[val];
-        return undefined;
-    });
+function mergeMap(map1: Template['fileMap'], map2: Template['fileMap']): Template['fileMap'] {
+    const arr = [...map1];
+    arr.push(...map2);
+    return new Map(arr);
 }
 
-export {
-    photinia,
-    overrideKey,
-    Configuration,
-    Template,
-    CallbackFn,
-    PackageJSON,
-    Errno,
-    Logger,
-    ChoiceBox,
-    awaitHelper,
-    arrayToObject,
-};
+export { photinia, Configuration, Template, PackageJSON, Logger, ChoiceBox, awaitHelper, arrayToObject, mergeMap };
