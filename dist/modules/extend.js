@@ -13,23 +13,25 @@ exports.mergeExtend = void 0;
 const utils_1 = require("./utils");
 function extension(template, templateMap) {
     return __awaiter(this, void 0, void 0, function* () {
-        let mergedFiles;
-        const extendTemplates = template.extends;
-        extendTemplates.push(template.name);
-        const firstExtendTemplate = templateMap.get(extendTemplates[0]);
-        if (!firstExtendTemplate) {
-            throw `Could not find template ${extendTemplates[0]}`;
+        // BUG: 暂不支持嵌套的继承
+        let mergeFiles;
+        const mergeTemplateList = template.extends;
+        mergeTemplateList.push(template.name);
+        const firstTemplate = templateMap.get(mergeTemplateList[0]);
+        if (!firstTemplate) {
+            throw `Could not find template ${mergeTemplateList[0]}`;
         }
-        extendTemplates.shift();
-        mergedFiles = firstExtendTemplate.fileMap;
-        extendTemplates.map((val) => {
+        mergeTemplateList.shift();
+        mergeFiles = firstTemplate.fileMap;
+        mergeTemplateList.map((val) => {
             const templ = templateMap.get(val);
             if (!templ) {
                 throw `Could not find template ${val}`;
             }
-            mergedFiles = utils_1.mergeMap(mergedFiles, templ.fileMap);
+            mergeFiles = utils_1.mergeMap(mergeFiles, templ.fileMap);
             return undefined;
         });
+        utils_1.Logger.debug(mergeFiles);
     });
 }
 exports.mergeExtend = extension;
