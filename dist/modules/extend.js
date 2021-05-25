@@ -10,28 +10,55 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mergeExtend = void 0;
-const utils_1 = require("./utils");
 function extension(template, templateMap) {
     return __awaiter(this, void 0, void 0, function* () {
-        // BUG: 暂不支持嵌套的继承
-        let mergeFiles;
-        const mergeTemplateList = template.extends;
-        mergeTemplateList.push(template.name);
-        const firstTemplate = templateMap.get(mergeTemplateList[0]);
-        if (!firstTemplate) {
-            throw `Could not find template ${mergeTemplateList[0]}`;
+        // BUG: 暂不支持嵌套的扩展
+        // let mergeFiles: Template['fileMap'];
+        // const mergeTemplateList = template.extends as string[];
+        // 解析历史，防止循环扩展导致的堆栈溢出
+        const resolveHistory = [];
+        // 嵌套扩展解析函数 - 待测试
+        function resolveExtends(template) {
+            resolveHistory.push(template);
+            const result = [];
+            template.extends.map(val => {
+                const extendTemplate = templateMap.get(val);
+                if (!extendTemplate) {
+                    throw `Could not find template ${val}!`;
+                }
+                else if (resolveHistory.includes(extendTemplate)) {
+                    throw `Template ${val} has circular extends!`;
+                }
+                else if (extendTemplate.extends) {
+                    result.push(...resolveExtends(extendTemplate));
+                }
+                else {
+                    result.push(extendTemplate.fileMap);
+                }
+                return undefined;
+            });
+            result.push(template.fileMap);
+            return result;
         }
-        mergeTemplateList.shift();
-        mergeFiles = firstTemplate.fileMap;
-        mergeTemplateList.map((val) => {
-            const templ = templateMap.get(val);
-            if (!templ) {
-                throw `Could not find template ${val}`;
-            }
-            mergeFiles = utils_1.mergeMap(mergeFiles, templ.fileMap);
-            return undefined;
-        });
-        utils_1.Logger.debug(mergeFiles);
+        // mergeTemplateList.push(template.name);
+        // const firstTemplate = templateMap.get(mergeTemplateList[0]);
+        // if (!firstTemplate) {
+        //     throw `Could not find template ${mergeTemplateList[0]}`;
+        // }
+        //
+        // mergeTemplateList.shift();
+        // mergeFiles = firstTemplate.fileMap;
+        //
+        // mergeTemplateList.map((val) => {
+        //     const templ = templateMap.get(val);
+        //     if (!templ) {
+        //         throw `Could not find template ${val}`;
+        //     }
+        //     mergeFiles = mergeMap(mergeFiles, templ.fileMap);
+        //     return undefined;
+        // });
+        //
+        // Logger.debug(mergeFiles);
     });
 }
 exports.mergeExtend = extension;
