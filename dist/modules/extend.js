@@ -12,53 +12,37 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.mergeExtend = void 0;
 function extension(template, templateMap) {
     return __awaiter(this, void 0, void 0, function* () {
-        // BUG: 暂不支持嵌套的扩展
-        // let mergeFiles: Template['fileMap'];
-        // const mergeTemplateList = template.extends as string[];
-        // 解析历史，防止循环扩展导致的堆栈溢出
-        const resolveHistory = [];
+        // 解析含有扩展选项的模板历史，防止循环扩展导致的堆栈溢出
+        const resolveExtendsHistory = [];
+        // 解析没有扩展选项的目标历史，防止重复扩展
+        const resolveNormalHistory = [];
         // 嵌套扩展解析函数 - 待测试
-        function resolveExtends(template) {
-            resolveHistory.push(template);
+        function resolveExtends(templateWithExtend) {
+            resolveExtendsHistory.push(templateWithExtend);
             const result = [];
-            template.extends.map(val => {
+            templateWithExtend.extends.map((val) => {
                 const extendTemplate = templateMap.get(val);
                 if (!extendTemplate) {
                     throw `Could not find template ${val}!`;
                 }
-                else if (resolveHistory.includes(extendTemplate)) {
-                    throw `Template ${val} has circular extends!`;
-                }
                 else if (extendTemplate.extends) {
+                    if (resolveExtendsHistory.includes(extendTemplate)) {
+                        throw `Template ${val} has circular extends!`;
+                    }
                     result.push(...resolveExtends(extendTemplate));
                 }
                 else {
+                    if (resolveNormalHistory.includes(extendTemplate)) {
+                        throw `Template ${templateWithExtend.name} has duplicate extends!`;
+                    }
+                    resolveNormalHistory.push(extendTemplate);
                     result.push(extendTemplate.fileMap);
                 }
                 return undefined;
             });
-            result.push(template.fileMap);
+            result.push(templateWithExtend.fileMap);
             return result;
         }
-        // mergeTemplateList.push(template.name);
-        // const firstTemplate = templateMap.get(mergeTemplateList[0]);
-        // if (!firstTemplate) {
-        //     throw `Could not find template ${mergeTemplateList[0]}`;
-        // }
-        //
-        // mergeTemplateList.shift();
-        // mergeFiles = firstTemplate.fileMap;
-        //
-        // mergeTemplateList.map((val) => {
-        //     const templ = templateMap.get(val);
-        //     if (!templ) {
-        //         throw `Could not find template ${val}`;
-        //     }
-        //     mergeFiles = mergeMap(mergeFiles, templ.fileMap);
-        //     return undefined;
-        // });
-        //
-        // Logger.debug(mergeFiles);
     });
 }
 exports.mergeExtend = extension;

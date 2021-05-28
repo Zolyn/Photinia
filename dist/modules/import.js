@@ -63,6 +63,9 @@ function importation(template, packageFile) {
         asy.each(choiceBox.files, (item, callback) => {
             const path = path_1.resolve(`${utils_1.photinia}/templates/${template.repo}`, item);
             const out = template.fileMap.get(item);
+            if (!out) {
+                utils_1.Logger.throw(`Could not get output path!`);
+            }
             let result = new shell.ShellString('Default string.');
             if (shell.test('-d', path)) {
                 result = shell.cp('-r', path, out);

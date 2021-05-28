@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mergeMap = exports.arrayToObject = exports.awaitHelper = exports.Logger = exports.photinia = void 0;
+exports.Logger = exports.mergeMap = exports.arrayToObject = exports.awaitHelper = exports.photinia = void 0;
 const chalk_1 = require("chalk");
 const os = require("os");
 const photinia = `${os.homedir()}/.config/photinia`;

@@ -35,7 +35,15 @@ function init() {
         if (!packageInfo) {
             utils_1.Logger.throw('Could not read package.json!');
         }
-        const promptQuestions = ['name', 'version', 'description', 'main', 'repository', 'author', 'license'];
+        const promptQuestions = [
+            'name',
+            'version',
+            'description',
+            'main',
+            'repository',
+            'author',
+            'license',
+        ];
         const [promptErr, promptRes] = yield utils_1.awaitHelper(inquirer.prompt(promptQuestions.map((val) => ({
             type: 'input',
             name: val,

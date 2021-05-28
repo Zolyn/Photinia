@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const utils_1 = require("./modules/utils");
+const extend_1 = require("./modules/extend");
 // const templates: Template[] = [
 //     {
 //         name: 'a',
@@ -30,43 +31,76 @@ const utils_1 = require("./modules/utils");
 //     const [err, res] = await awaitHelper(mergeExtend(templates[2],new Map(templates.map(val => [val.name, val]))));
 // })().catch((err) => Logger.err(err));
 // 嵌套依赖
-const obj = {
-    a: {
-        cont: 'a',
-    },
-    b: {
-        cont: 'b',
-        extends: ['a', 'c']
-    },
-    c: {
-        cont: 'c',
-        extends: ['d', 'b']
-    },
-    d: {
-        cont: 'd',
-    },
-    e: {
-        cont: 'e',
-        extends: 'c'
-    }
+// const obj = {
+//     a: {
+//         cont: 'a',
+//     },
+//     b: {
+//         cont: 'b',
+//         extends: ['a', 'c']
+//     },
+//     c: {
+//         cont: 'c',
+//         extends: ['d', 'b']
+//     },
+//     d: {
+//         cont: 'd',
+//     },
+//     e: {
+//         cont: 'e',
+//         extends: 'c'
+//     }
+// }
+//
+// const searchHistory = [];
+//
+// function mergeExtends(t: string) {
+//     searchHistory.push(t);
+//     const result = [];
+//     for (const val of obj[t].extends) {
+//         if (searchHistory.includes(val)) {
+//             throw `template ${t} has circular dependencies!`;
+//             break;
+//         } else if (obj[val].extends) {
+//             result.push(...mergeExtends(val));
+//         } else {
+//             result.push(obj[val].cont);
+//         }
+//     }
+//     result.push(obj[t].cont);
+//     return result;
+// }
+//
+// Logger.debug(mergeExtends('c'));
+const config = {
+    initPackageManager: 'yarn',
+    templates: [
+        {
+            name: 'a',
+            fileMap: new Map([['a', '.']]),
+            repo: 'a',
+        },
+        {
+            name: 'b',
+            fileMap: new Map([['b', '.']]),
+            repo: 'b',
+            extends: ['a'],
+        },
+        {
+            name: 'c',
+            fileMap: new Map([['c', '.']]),
+            repo: 'c',
+            extends: ['b'],
+        },
+        {
+            name: 'd',
+            fileMap: new Map([['c', '.']]),
+            repo: 'd',
+            extends: ['c', 'a'],
+        },
+    ],
 };
-const searchHistory = [];
-function mergeExtends(t) {
-    searchHistory.push(t);
-    const result = [];
-    for (const val of obj[t].extends) {
-        if (searchHistory.includes(val)) {
-            throw `template ${t} has circular dependencies!`;
-            break;
-        }
-        else if (obj[val].extends) {
-            result.push(...mergeExtends(val));
-        }
-        else {
-            result.push(obj[val].cont);
-        }
-    }
-    result.push(obj[t].cont);
-    return result;
-}
-utils_1.Logger.debug(mergeExtends('c'));
+const templateMap = new Map(config.templates.map((val) => [val.name, val]));
+utils_1.Logger.debug(templateMap);
+utils_1.Logger.debug([config.templates[2]].includes(config.templates[1]));
+extend_1.mergeExtend(config.templates[2], templateMap);
