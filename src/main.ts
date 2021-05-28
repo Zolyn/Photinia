@@ -1,4 +1,12 @@
-import { photinia, awaitHelper, Configuration, Logger, PackageJSON, Template } from './modules/utils';
+import {
+    photinia,
+    awaitHelper,
+    Configuration,
+    Logger,
+    PackageJSON,
+    Template,
+    TemplateWithExtend,
+} from './modules/utils';
 import { initProject } from './modules/init';
 import { importTemplate } from './modules/import';
 import * as shell from 'shelljs';
@@ -55,8 +63,7 @@ import { mergeExtend } from './modules/extend';
 
     // 实验性功能：继承
     if (template.extends) {
-        const [extendErr, extendRes] = await awaitHelper(mergeExtend(template, templateMap));
-
+        const [extendErr, extendRes] = await awaitHelper(mergeExtend(template as TemplateWithExtend, templateMap));
         if (extendErr) {
             Logger.err(extendErr);
             return;
