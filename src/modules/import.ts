@@ -4,6 +4,7 @@ import * as prettier from 'prettier';
 import { resolve } from 'path';
 import { arrayToObject, awaitHelper, ChoiceBox, Logger, PackageJSON, photinia, Template } from './utils';
 import * as shell from 'shelljs';
+import { read } from 'fs';
 
 async function importation(template: Template, packageFile: PackageJSON) {
     let templatePackageInfo: PackageJSON;
@@ -34,7 +35,7 @@ async function importation(template: Template, packageFile: PackageJSON) {
         Logger.throw(readResult.stderr);
     }
 
-    templatePackageInfo = JSON.parse(readResult.toString()) as PackageJSON;
+    templatePackageInfo = JSON.parse(readResult.toString());
 
     // 转换内容为提问时用到的数组
     choiceBox.files = [...template.fileMap].map((val) => val[0]);
@@ -44,7 +45,7 @@ async function importation(template: Template, packageFile: PackageJSON) {
     choiceBox.scripts = Object.entries(templatePackageInfo.scripts).map((val) => `${val[0]} --- ${val[1]}`);
 
     if (!promptRes.all) {
-        const messages = ['files', 'devDependencies', 'scripts'];
+        const messages: Readonly<string[]> = ['files', 'devDependencies', 'scripts'];
         const [selectErr, selectRes] = await awaitHelper<ChoiceBox>(
             inquirer.prompt(
                 messages.map((val) => ({
@@ -69,7 +70,11 @@ async function importation(template: Template, packageFile: PackageJSON) {
         choiceBox.files,
         (item, callback) => {
             const path = resolve(`${photinia}/templates/${template.repo}`, item);
-            const out = template.fileMap.get(item) as string;
+            const out = template.fileMap.get(item);
+            if (!out) {
+                Logger.throw(`Could not get output path!`);
+            }
+
             let result: shell.ShellString = new shell.ShellString('Default string.');
 
             if (shell.test('-d', path)) {

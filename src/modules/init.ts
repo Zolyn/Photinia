@@ -28,7 +28,15 @@ async function init() {
         Logger.throw('Could not read package.json!');
     }
 
-    const promptQuestions = ['name', 'version', 'description', 'main', 'repository', 'author', 'license'];
+    const promptQuestions: Readonly<string[]> = [
+        'name',
+        'version',
+        'description',
+        'main',
+        'repository',
+        'author',
+        'license',
+    ];
     const [promptErr, promptRes] = await awaitHelper(
         inquirer.prompt(
             promptQuestions.map((val) => ({
