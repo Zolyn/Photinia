@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Logger = exports.mergeMap = exports.arrayToObject = exports.awaitHelper = exports.photinia = void 0;
+exports.Logger = exports.mergeMap = exports.arrayToObject = exports.awaitHelper = exports.preProcess = exports.photinia = void 0;
 const chalk_1 = require("chalk");
 const os = require("os");
+const path_1 = require("path");
 const photinia = `${os.homedir()}/.config/photinia`;
 exports.photinia = photinia;
 // await帮助函数，帮助捕获异常
@@ -38,3 +39,10 @@ function mergeMap(map1, map2) {
     return new Map(arr);
 }
 exports.mergeMap = mergeMap;
+// 文件映射列表预处理函数
+function preProcess(template) {
+    return new Map([...template.fileMap].map(val => {
+        return [path_1.join(template.repo, val[0]), val[1]];
+    }));
+}
+exports.preProcess = preProcess;

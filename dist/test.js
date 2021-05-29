@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const utils_1 = require("./modules/utils");
 const extend_1 = require("./modules/extend");
 // const templates: Template[] = [
 //     {
@@ -96,11 +95,12 @@ const config = {
             name: 'd',
             fileMap: new Map([['c', '.']]),
             repo: 'd',
-            extends: ['c', 'a'],
+            extends: ['c'],
         },
     ],
 };
 const templateMap = new Map(config.templates.map((val) => [val.name, val]));
-utils_1.Logger.debug(templateMap);
-utils_1.Logger.debug([config.templates[2]].includes(config.templates[1]));
-extend_1.mergeExtend(config.templates[2], templateMap);
+// Logger.debug(templateMap);
+// Logger.debug([config.templates[2]].includes(config.templates[1]));
+//
+extend_1.mergeExtend(config.templates[3], templateMap);
