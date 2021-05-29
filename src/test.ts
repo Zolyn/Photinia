@@ -105,7 +105,7 @@ const config: Configuration = {
     ],
 };
 const templateMap = new Map(config.templates.map((val) => [val.name, val]));
-Logger.debug(templateMap);
-Logger.debug([config.templates[2]].includes(config.templates[1]));
-
+// Logger.debug(templateMap);
+// Logger.debug([config.templates[2]].includes(config.templates[1]));
+//
 mergeExtend(config.templates[2] as TemplateWithExtend, templateMap);

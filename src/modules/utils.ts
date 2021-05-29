@@ -1,5 +1,6 @@
 import { whiteBright as chalk } from 'chalk';
 import * as os from 'os';
+import { join } from 'path';
 
 const photinia = `${os.homedir()}/.config/photinia`;
 
@@ -33,7 +34,7 @@ interface PackageJSON {
 
 type ErrTypes = NodeJS.ErrnoException | string | null;
 
-type fileMap = Template['fileMap'];
+type FileMap = Template['fileMap'];
 
 // await帮助函数，帮助捕获异常
 function awaitHelper<T, U = string>(promise: Promise<T>): Promise<[U | null, T | null]> {
@@ -83,10 +84,17 @@ type copyAttr<T, K extends keyof T, N extends string> = {
     [P in N]: T[K];
 };
 
-function mergeMap(map1: fileMap, map2: fileMap): fileMap {
+function mergeMap(map1: FileMap, map2: FileMap): FileMap {
     const arr = [...map1];
     arr.push(...map2);
     return new Map(arr);
+}
+
+// 文件映射列表预处理函数
+function preProcess(template: Template): FileMap {
+     return new Map([...template.fileMap].map(val => {
+        return [join(template.repo, val[0]), val[1]];
+    }));
 }
 
 export {
@@ -95,8 +103,9 @@ export {
     Template,
     TemplateWithExtend,
     PackageJSON,
-    fileMap,
+    FileMap,
     ChoiceBox,
+    preProcess,
     awaitHelper,
     arrayToObject,
     mergeMap,
