@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0-rc.1](https://github.com/Zolyn/Photinia/compare/v1.0.0-rc.0...v1.0.0-rc.1) (2021-05-29)
+
+
+### Features
+
+* extension(experimental) ([72e8b0b](https://github.com/Zolyn/Photinia/commit/72e8b0bb17f711128dd9ace0a4559081c3129f17))
+
+
+### Tests
+
+* experimental function ([98f632a](https://github.com/Zolyn/Photinia/commit/98f632ad8c9f9eff60d2a3dc88915a5ef46c955f))
+* extension function test ([c82025f](https://github.com/Zolyn/Photinia/commit/c82025fdfb00c72edf2dca8bffea7e085bda15f4))
+* extension function test 2 ([7a5f5f6](https://github.com/Zolyn/Photinia/commit/7a5f5f6f3176b9137eef47308651e1e8caa30a24))
+* extension function test 2 ([abac625](https://github.com/Zolyn/Photinia/commit/abac625c59514285b6bac66f0edddb37cd93bfdf))
+* extension function test 2 ([977e32b](https://github.com/Zolyn/Photinia/commit/977e32b61e12e94de21a84721942d41317ef5ecb))
+* extension function test 3 ([6e28719](https://github.com/Zolyn/Photinia/commit/6e28719e0db2027f75232759fd891ba8c226daee))
+* nested extension test ([b00939b](https://github.com/Zolyn/Photinia/commit/b00939bf3e7f87858738322e0acfc620b87947b7))
+
 ## [1.0.0-rc.0](https://github.com/Zolyn/Photinia/compare/v1.0.0-beta.0...v1.0.0-rc.0) (2021-05-17)
 
 
