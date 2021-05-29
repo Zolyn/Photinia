@@ -3,11 +3,13 @@ import * as inquirer from 'inquirer';
 import * as prettier from 'prettier';
 import { resolve } from 'path';
 import { arrayToObject, awaitHelper, ChoiceBox, Logger, PackageJSON, photinia, Template } from './utils';
-import * as shell from 'shelljs';
-import { read } from 'fs';
+import * as sh from 'shelljs';
 
-async function importation(template: Template, packageFile: PackageJSON) {
-    let templatePackageInfo: PackageJSON;
+async function importation(
+    template: Template,
+    templatePackageInfo: PackageJSON,
+    packageFile: PackageJSON,
+): Promise<void> {
     let choiceBox: ChoiceBox = {
         files: [],
         devDependencies: [],
@@ -28,14 +30,6 @@ async function importation(template: Template, packageFile: PackageJSON) {
     if (promptErr) {
         Logger.throw(promptErr);
     }
-
-    // 读取模板仓库
-    const readResult = shell.cat(`${photinia}/templates/${template.repo}/package.json`);
-    if (readResult.code) {
-        Logger.throw(readResult.stderr);
-    }
-
-    templatePackageInfo = JSON.parse(readResult.toString());
 
     // 转换内容为提问时用到的数组
     choiceBox.files = [...template.fileMap].map((val) => val[0]);
@@ -60,27 +54,29 @@ async function importation(template: Template, packageFile: PackageJSON) {
 
         if (selectErr) {
             Logger.throw(selectErr);
+        } else if (!selectRes) {
+            Logger.throw('Unknown error');
         }
 
-        choiceBox = selectRes as ChoiceBox;
+        choiceBox = selectRes;
     }
 
     // 导入文件
     asy.each(
         choiceBox.files,
         (item, callback) => {
-            const path = resolve(`${photinia}/templates/${template.repo}`, item);
+            const path = resolve(`${photinia}/templates`, item);
             const out = template.fileMap.get(item);
             if (!out) {
                 Logger.throw(`Could not get output path!`);
             }
 
-            let result: shell.ShellString = new shell.ShellString('Default string.');
+            let result: sh.ShellString = new sh.ShellString('Default string.');
 
-            if (shell.test('-d', path)) {
-                result = shell.cp('-r', path, out);
-            } else if (shell.test('-f', path)) {
-                result = shell.cp(path, out);
+            if (sh.test('-d', path)) {
+                result = sh.cp('-r', path, out);
+            } else if (sh.test('-f', path)) {
+                result = sh.cp(path, out);
             } else {
                 callback(new Error(`Could not find file ${item}`));
             }
@@ -108,7 +104,7 @@ async function importation(template: Template, packageFile: PackageJSON) {
         const devDependencies = arrayToObject(choiceBox.devDependencies);
         const scripts = arrayToObject(choiceBox.scripts);
 
-        const result = shell.echo(
+        const result = sh.echo(
             prettier.format(JSON.stringify({ ...packageFile, ...{ devDependencies, scripts } }), {
                 parser: 'json-stringify',
             }),
