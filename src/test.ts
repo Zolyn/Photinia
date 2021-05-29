@@ -99,8 +99,8 @@ const config: Configuration = {
         {
             name: 'd',
             fileMap: new Map([['c', '.']]),
-            repo: 'd',
-            extends: ['c', 'a'],
+            repo: 'typescript',
+            extends: ['c'],
         },
     ],
 };
@@ -108,4 +108,4 @@ const templateMap = new Map(config.templates.map((val) => [val.name, val]));
 // Logger.debug(templateMap);
 // Logger.debug([config.templates[2]].includes(config.templates[1]));
 //
-mergeExtend(config.templates[2] as TemplateWithExtend, templateMap);
+mergeExtend(config.templates[3] as TemplateWithExtend, templateMap);
