@@ -94,7 +94,7 @@ const config = {
         {
             name: 'd',
             fileMap: new Map([['c', '.']]),
-            repo: 'd',
+            repo: 'typescript',
             extends: ['c'],
         },
     ],

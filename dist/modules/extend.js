@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mergeExtend = void 0;
+const sh = require("shelljs");
+const path_1 = require("path");
 const utils_1 = require("./utils");
 function extension(template, templateMap) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -50,8 +52,6 @@ function extension(template, templateMap) {
         }
         const fileMapList = resolveExtends(template);
         // 合并文件映射列表
-        // BUG: 仓库不同但文件名相同导致合并后被覆盖
-        // TODO: 事先对每个模板的文件映射列表进行路径补全
         let mergedFileMap = fileMapList[0];
         fileMapList.shift();
         fileMapList.map((val) => {
@@ -60,6 +60,36 @@ function extension(template, templateMap) {
         });
         utils_1.Logger.debug(mergedFileMap);
         utils_1.Logger.debug(repos);
+        // package.json集合
+        const packageInfoList = {
+            depList: [],
+            scriptList: [],
+        };
+        // 读取所有package.json的devDependencies和scripts项
+        [...repos].map((val) => {
+            const result = sh.cat(path_1.resolve(`${utils_1.photinia}/templates`, val, 'package.json'));
+            utils_1.Logger.debug(path_1.resolve(`${utils_1.photinia}/templates`, val, 'package.json'));
+            if (result.code) {
+                utils_1.Logger.throw(result.stderr);
+            }
+            const { devDependencies, scripts } = JSON.parse(result.toString());
+            packageInfoList.depList.push(devDependencies);
+            packageInfoList.scriptList.push(scripts);
+            utils_1.Logger.debug(packageInfoList);
+            return undefined;
+        });
+        function mergePackageInfo(list) {
+            let result = list[0];
+            list.shift();
+            list.map((val) => {
+                result = utils_1.mergeObj(result, val);
+                return undefined;
+            });
+            return result;
+        }
+        const mergedDevDeps = mergePackageInfo(packageInfoList.depList);
+        const mergedScripts = mergePackageInfo(packageInfoList.scriptList);
+        return { mergedFileMap, mergedDevDeps, mergedScripts };
     });
 }
 exports.mergeExtend = extension;
