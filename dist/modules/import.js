@@ -107,3 +107,4 @@ function importation(template, templatePackageInfo, packageFile) {
     });
 }
 exports.importTemplate = importation;
+//# sourceMappingURL=import.js.map

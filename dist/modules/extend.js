@@ -93,3 +93,4 @@ function extension(template, templateMap) {
     });
 }
 exports.mergeExtend = extension;
+//# sourceMappingURL=extend.js.map

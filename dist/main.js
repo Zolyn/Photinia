@@ -106,3 +106,4 @@ const extend_1 = require("./modules/extend");
         utils_1.Logger.err(templateErr);
     }
 }))();
+//# sourceMappingURL=main.js.map

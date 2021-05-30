@@ -104,3 +104,4 @@ const templateMap = new Map(config.templates.map((val) => [val.name, val]));
 // Logger.debug([config.templates[2]].includes(config.templates[1]));
 //
 extend_1.mergeExtend(config.templates[3], templateMap);
+//# sourceMappingURL=test.js.map
