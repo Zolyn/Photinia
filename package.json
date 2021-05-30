@@ -13,7 +13,7 @@
     },
     "license": "MIT",
     "author": "Zorin",
-    "main": "index.js",
+    "main": "dist/main.js",
     "bin": {
         "photinia": "dist/main.js"
     },
